@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Perdas por Ineficiência de Dados</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+    
+    h1 {
+      color: #0066cc;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    input[type="number"], select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .slider {
+      flex-grow: 1;
+    }
+    
+    .value-display {
+      min-width: 60px;
+      text-align: right;
+    }
+    
+    button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: 30px auto;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #0055aa;
+    }
+    
+    .results {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f0f7ff;
+      border-radius: 8px;
+      border-left: 5px solid #0066cc;
+    }
+    
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .result-row:last-child {
+      border-bottom: none;
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #0066cc;
+    }
+    
+    .info-icon {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      background-color: #0066cc;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 18px;
+      font-size: 12px;
+      margin-left: 5px;
+      cursor: help;
+      position: relative;
+    }
+    
+    .tooltip {
+      visibility: hidden;
+      width: 200px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 12px;
+      font-weight: normal;
+    }
+    
+    .info-icon:hover .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    .recommendation {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #e6f7e6;
+      border-radius: 8px;
+      border-left: 5px solid #28a745;
+    }
+    
+    .recommendation h3 {
+      color: #28a745;
+      margin-top: 0;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      
+      input[type="number"], select {
+        font-size: 14px;
+      }
+      
+      button {
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Perdas por Ineficiência de Dados</h1>
+    
+    <div class="form-group">
+      <label for="faturamento">Faturamento anual da empresa (R$)</label>
+      <input type="number" id="faturamento" min="360000" max="3000000" value="1000000" step="10000">
+    </div>
+    
+    <div class="form-group">
+      <label for="funcionarios">Número de funcionários envolvidos com dados</label>
+      <input type="number" id="funcionarios" min="1" max="100" value="5">
+    </div>
+    
+    <div class="form-group">
+      <label for="salario-medio">Salário médio desses profissionais (R$/mês)</label>
+      <input type="number" id="salario-medio" min="3000" max="30000" value="8000">
+    </div>
+    
+    <div class="form-group">
+      <label>Tempo gasto na coleta e preparação manual de dados (% da jornada de trabalho)
+        <span class="info-icon">i
+          <span class="tooltip">Tempo gasto coletando, limpando e organizando dados antes de analisá-los</span>
+        </span>
+      </label>
+      <div class="slider-container">
+        <input type="range" id="tempo-preparacao" class="slider" min="10" max="70" value="40">
+        <span id="tempo-preparacao-valor" class="value-display">40%</span>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Taxa de retrabalho por inconsistências nos dados (% do trabalho)
+        <span class="info-icon">i
+          <span class="tooltip">Quantidade de trabalho que precisa ser refeito devido a erros ou inconsistências nos dados</span>
+        </span>
+      </label>
+      <div class="slider-container">
+        <input type="range" id="taxa-retrabalho" class="slider" min="5" max="50" value="25">
+        <span id="taxa-retrabalho-valor" class="value-display">25%</span>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Atraso médio na tomada de decisão devido à falta de dados (dias)
+        <span class="info-icon">i
+          <span class="tooltip">Quanto tempo a mais é necessário para tomar decisões por não ter dados prontamente disponíveis</span>
+        </span>
+      </label>
+      <input type="number" id="atraso-decisao" min="1" max="30" value="5">
+    </div>
+    
+    <div class="form-group">
+      <label>Oportunidades de negócio perdidas por falta de insights (% do faturamento anual)
+        <span class="info-icon">i
+          <span class="tooltip">Estimativa de receita adicional que poderia ser gerada com melhores insights baseados em dados</span>
+        </span>
+      </label>
+      <div class="slider-container">
+        <input type="range" id="oportunidades-perdidas" class="slider" min="1" max="15" value="5">
+        <span id="oportunidades-perdidas-valor" class="value-display">5%</span>
+      </div>
+    </div>
+    
+    <button onclick="calcularPerdas()">Calcular Perdas</button>
+    
+    <div id="resultados" class="results" style="display: none;">
+      <h2>Resultados: Perdas Mensais Estimadas</h2>
+      
+      <div class="result-row">
+        <span>Custo do tempo desperdiçado em preparação de dados:</span>
+        <span id="resultado-preparacao">R$ 0</span>
+      </div>
+      
+      <div class="result-row">
+        <span>Custo do retrabalho por inconsistências:</span>
+        <span id="resultado-retrabalho">R$ 0</span>
+      </div>
+      
+      <div class="result-row">
+        <span>Impacto financeiro do atraso nas decisões:</span>
+        <span id="resultado-atraso">R$ 0</span>
+      </div>
+      
+      <div class="result-row">
+        <span>Valor das oportunidades perdidas:</span>
+        <span id="resultado-oportunidades">R$ 0</span>
+      </div>
+      
+      <div class="result-row">
+        <span>Perda total estimada por mês:</span>
+        <span id="resultado-total">R$ 0</span>
+      </div>
+    </div>
+    
+    <div id="recomendacao" class="recommendation" style="display: none;">
+      <h3>O Impacto de Uma Estrutura de Dados Eficiente</h3>
+      <p>Com base nos dados informados, sua empresa pode estar perdendo valores significativos mensalmente devido à falta de uma estrutura de dados adequada.</p>
+      <p>Uma arquitetura de dados bem implementada poderia:</p>
+      <ul>
+        <li>Reduzir em até 80% o tempo gasto na preparação de dados</li>
+        <li>Diminuir o retrabalho em pelo menos 70%</li>
+        <li>Acelerar a tomada de decisões em 3-5x</li>
+        <li>Revelar novas oportunidades de negócio através de insights baseados em dados</li>
+      </ul>
+      <p>O retorno sobre o investimento em uma solução adequada geralmente ocorre em 3-6 meses, considerando apenas a redução de custos operacionais.</p>
+    </div>
+  </div>
+
+  <script>
+    // Atualiza os valores dos sliders em tempo real
+    document.getElementById('tempo-preparacao').addEventListener('input', function() {
+      document.getElementById('tempo-preparacao-valor').textContent = this.value + '%';
+    });
+    
+    document.getElementById('taxa-retrabalho').addEventListener('input', function() {
+      document.getElementById('taxa-retrabalho-valor').textContent = this.value + '%';
+    });
+    
+    document.getElementById('oportunidades-perdidas').addEventListener('input', function() {
+      document.getElementById('oportunidades-perdidas-valor').textContent = this.value + '%';
+    });
+    
+    // Função principal para calcular as perdas
+    function calcularPerdas() {
+      // Obter valores dos inputs
+      const faturamentoAnual = parseFloat(document.getElementById('faturamento').value);
+      const numFuncionarios = parseInt(document.getElementById('funcionarios').value);
+      const salarioMedio = parseFloat(document.getElementById('salario-medio').value);
+      const tempoPreparacao = parseInt(document.getElementById('tempo-preparacao').value) / 100;
+      const taxaRetrabalho = parseInt(document.getElementById('taxa-retrabalho').value) / 100;
+      const atrasoDecisao = parseInt(document.getElementById('atraso-decisao').value);
+      const oportunidadesPerdidas = parseInt(document.getElementById('oportunidades-perdidas').value) / 100;
+      
+      // Cálculos
+      // 1. Custo do tempo desperdiçado em preparação de dados (mensal)
+      const custoTempoPreparacao = numFuncionarios * salarioMedio * tempoPreparacao;
+      
+      // 2. Custo do retrabalho (mensal)
+      const custoRetrabalho = numFuncionarios * salarioMedio * taxaRetrabalho;
+      
+      // 3. Impacto financeiro do atraso nas decisões (mensal)
+      // Assumindo que cada dia de atraso custa 0.05% do faturamento mensal
+      const impactoAtraso = (faturamentoAnual / 12) * (atrasoDecisao * 0.0005);
+      
+      // 4. Valor das oportunidades perdidas (mensal)
+      const valorOportunidadesPerdidas = (faturamentoAnual * oportunidadesPerdidas) / 12;
+      
+      // Cálculo da perda total mensal
+      const perdaTotal = custoTempoPreparacao + custoRetrabalho + impactoAtraso + valorOportunidadesPerdidas;
+      
+      // Formatação dos resultados para moeda brasileira
+      const formatoMoeda = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2
+      });
+      
+      // Exibir resultados
+      document.getElementById('resultado-preparacao').textContent = formatoMoeda.format(custoTempoPreparacao);
+      document.getElementById('resultado-retrabalho').textContent = formatoMoeda.format(custoRetrabalho);
+      document.getElementById('resultado-atraso').textContent = formatoMoeda.format(impactoAtraso);
+      document.getElementById('resultado-oportunidades').textContent = formatoMoeda.format(valorOportunidadesPerdidas);
+      document.getElementById('resultado-total').textContent = formatoMoeda.format(perdaTotal);
+      
+      // Exibir as seções de resultados e recomendações
+      document.getElementById('resultados').style.display = 'block';
+      document.getElementById('recomendacao').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
