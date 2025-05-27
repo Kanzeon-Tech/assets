@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicação Interativa: Análise Estratégica Kanzeon & Juan Pablo Motterle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Application Structure Plan: Single-page, scrollable application with a sticky header for navigation.
+        Sections:
+        1. Hero: Title & brief intro.
+        2. Context: About Juan Pablo & Kanzeon's approach (static cards).
+        3. Interactive Diagnostic Dashboard (C-Level Insights): Buttons to select CMO, CDO, CTO, CSO. Clicking dynamically displays:
+            - Key observations (text).
+            - Illustrative KPIs (text/simple visuals).
+            - Kanzeon's high-level suggestions (text).
+            This allows focused exploration and reduces initial info overload.
+        4. Integrated Analysis Deep Dive: Sub-sections for Qualitative, Quantitative (Chart.js), Diagnostic, Prognostic, Predictive (Chart.js), Prescriptive analyses. Textual content aims for clarity.
+        5. Kanzeon's Value Proposition: Clear summary of solutions.
+        6. Call to Action/Contact.
+        7. Footer.
+        User Flow: Navigate via sticky header or scroll. The Diagnostic Dashboard allows targeted exploration. Integrated Analysis provides comprehensive insights.
+        Why this structure? It balances guided narrative with interactive exploration, enhancing user understanding and synthesis of the report's complex information. It moves beyond a static infographic to a more engaging application feel. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: CMO/CDO/CTO/CSO perspectives. Goal: Allow focused understanding of each C-Level's diagnostic. Viz/Presentation: Dynamically loaded HTML content blocks (text, lists, illustrative KPIs) upon clicking C-Level buttons. Interaction: Click to select C-Level view. Justification: Improves clarity and reduces cognitive load compared to displaying all information at once. Method: Vanilla JS for DOM manipulation.
+        - Report Info: Quantitative Digital Metrics (CMO). Goal: Show current digital footprint. Viz: Bar Chart (Chart.js). Interaction: Tooltips. Justification: Clear quantitative comparison. Library: Chart.js (Canvas).
+        - Report Info: Projected Lead Growth (Predictive). Goal: Show potential impact. Viz: Line Chart (Chart.js). Interaction: Tooltips. Justification: Visualizing future improvement. Library: Chart.js (Canvas).
+        - Report Info: Qualitative, Diagnostic, Prognostic, Prescriptive Analyses. Goal: Provide detailed insights. Viz/Presentation: Structured HTML text blocks, lists, cards. Interaction: None beyond reading. Justification: Clear textual presentation for narrative elements. Method: HTML/Tailwind.
+        - CONFIRMING NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; background-color: #F8FAFC; /* bg-slate-50 */ color: #334155; /* text-slate-700 */ }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .nav-link { transition: color 0.3s ease; }
+        .nav-link:hover { color: #2563EB; /* blue-600 */ }
+        .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07); padding: 1.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.07); }
+        .section-title { font-size: 1.875rem; font-weight: 600; margin-bottom: 1rem; color: #1E293B; /* slate-800 */ }
+        .subsection-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: #1E293B; /* slate-800 */ }
+        .interactive-tab { cursor: pointer; padding: 0.5rem 1rem; border-radius: 0.375rem; transition: background-color 0.3s ease, color 0.3s ease; border: 1px solid #CBD5E1 /* slate-300 */; color: #475569 /* slate-600 */; }
+        .interactive-tab:hover { background-color: #EFF6FF; /* blue-50 */ color: #2563EB /* blue-600 */; }
+        .interactive-tab.active { background-color: #3B82F6; /* blue-500 */ color: white; border-color: #3B82F6; }
+        .content-text { line-height: 1.6; }
+        .kpi-value { font-size: 1.75rem; font-weight: 700; color: #2563EB; /* blue-600 */ }
+        .kpi-label { font-size: 0.875rem; color: #475569; /* slate-600 */ }
+        .dynamic-content-area { min-height: 200px; background-color: #F1F5F9; /* slate-100 */ padding: 1rem; border-radius: 0.375rem; }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex flex-col sm:flex-row justify-between items-center">
+            <h1 class="text-2xl font-bold text-slate-800">Kanzeon <span class="text-blue-600">Insights</span></h1>
+            <nav class="mt-2 sm:mt-0">
+                <ul class="flex space-x-3 sm:space-x-4">
+                    <li><a href="#contexto" class="nav-link text-slate-600">Contexto</a></li>
+                    <li><a href="#diagnostico-interativo" class="nav-link text-slate-600">Diagnóstico</a></li>
+                    <li><a href="#analise-integrada" class="nav-link text-slate-600">Análise</a></li>
+                    <li><a href="#proposta-valor" class="nav-link text-slate-600">Proposta</a></li>
+                    <li><a href="#contato" class="nav-link text-slate-600">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 py-8">
+        <section id="hero" class="text-center py-10 sm:py-16 mb-10 sm:mb-12">
+            <h2 class="text-3xl sm:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">Análise Estratégica Interativa</h2>
+            <p class="text-lg sm:text-xl text-slate-600 mb-5 sm:mb-6">Explorando Oportunidades para Juan Pablo Bortagaray Motterle</p>
+            <p class="text-sm sm:text-md text-slate-500 max-w-2xl mx-auto">Esta aplicação interativa apresenta a análise da Kanzeon sobre o potencial de crescimento e colaboração, focando em otimização digital e inteligência analítica para Juan Pablo e seus clientes PME.</p>
+        </section>
+
+        <section id="contexto" class="mb-10 sm:mb-12 scroll-mt-20">
+            <h3 class="section-title text-center mb-6 sm:mb-8">Contextualização</h3>
+            <div class="grid md:grid-cols-2 gap-6 sm:gap-8">
+                <div class="card">
+                    <h4 class="subsection-title text-blue-600">Juan Pablo B. Motterle</h4>
+                    <p class="content-text text-sm">Consultor focado em growth marketing e IA (CNPJ 45.346.369/0001-99), com a proposta de valor de soluções "simples e brutais" para PMEs, visando otimizar funis de aquisição e aplicar growth hacking.</p>
+                </div>
+                <div class="card">
+                    <h4 class="subsection-title text-blue-600">Abordagem Kanzeon</h4>
+                    <p class="content-text text-sm">Especialistas em transformar dados em inteligência acionável. Buscamos identificar oportunidades e fornecer ferramentas para que consultores como Juan Pablo otimizem operações e agreguem mais valor aos seus clientes.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="diagnostico-interativo" class="mb-10 sm:mb-12 scroll-mt-20">
+            <h3 class="section-title text-center mb-4 sm:mb-6">Diagnóstico Interativo: Visão C-Level</h3>
+            <p class="text-center text-slate-500 mb-6 sm:mb-8 text-sm">Selecione uma perspectiva C-Level para explorar as observações e sugestões iniciais da Kanzeon.</p>
+            <div class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 sm:mb-8" id="cLevelTabs">
+                <button class="interactive-tab active" data-clevel="cmo">CMO</button>
+                <button class="interactive-tab" data-clevel="cdo">CDO</button>
+                <button class="interactive-tab" data-clevel="cto">CTO</button>
+                <button class="interactive-tab" data-clevel="cso">CSO</button>
+            </div>
+            <div id="cLevelContent" class="card dynamic-content-area">
+            </div>
+        </section>
+
+        <section id="analise-integrada" class="mb-10 sm:mb-12 scroll-mt-20">
+            <h3 class="section-title text-center mb-6 sm:mb-8">Análise Integrada Kanzeon</h3>
+            <p class="text-center text-slate-500 mb-8 sm:mb-10 text-sm">Consolidamos nossa análise em múltiplas dimensões para uma visão 360º das oportunidades.</p>
+
+            <div class="grid md:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+                <div class="card">
+                    <h4 class="subsection-title">🔍 Análise Qualitativa</h4>
+                    <p class="content-text text-sm">Juan Pablo possui um posicionamento de valor claro. No entanto, a materialização dessa promessa em uma presença digital otimizada e na demonstração explícita do uso de IA em seus processos próprios oferece espaço para aprimoramento. A sofisticação dos funis de lead e a qualidade do conteúdo são áreas chave.</p>
+                </div>
+                <div class="card">
+                    <h4 class="subsection-title">🔢 Análise Quantitativa (Estimativas)</h4>
+                    <p class="content-text text-sm mb-3">Métricas estimadas indicam oportunidades de crescimento digital:</p>
+                    <div class="chart-container">
+                        <canvas id="metricasDigitaisChart"></canvas>
+                    </div>
+                     <p class="text-xs text-center mt-1 text-slate-400">Gráfico ilustrativo com dados estimados.</p>
+                </div>
+            </div>
+
+            <div class="card mb-6 sm:mb-8">
+                <h4 class="subsection-title">ախ Análise Diagnóstica: O Que os Dados Indicam?</h4>
+                <p class="content-text text-sm">O tráfego web e o ranking para palavras-chave estratégicas sugerem subotimização de SEO e marketing de conteúdo, limitando alcance orgânico. A pegada tecnológica visível indica um nível básico de automação e uso de dados, apontando para potencial de sofisticação analítica não totalmente explorado.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+                <div class="card">
+                    <h4 class="subsection-title">🔮 Análise Prognóstica: Cenário Inalterado</h4>
+                    <p class="content-text text-sm">Mantendo o cenário atual, desafios podem surgir:
+                        <ul class="list-disc list-inside mt-1 text-sm space-y-1">
+                            <li>Estagnação na aquisição de clientes.</li>
+                            <li>Dificuldade em escalar operações.</li>
+                            <li>Perda de competitividade.</li>
+                            <li>Oportunidades de upsell limitadas.</li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="card">
+                    <h4 class="subsection-title">🚀 Análise Preditiva: Com Kanzeon</h4>
+                    <p class="content-text text-sm mb-3">Com as soluções Kanzeon, prevemos:</p>
+                    <div class="chart-container">
+                        <canvas id="projecaoImpactoChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center mt-1 text-slate-400">Gráfico ilustrativo com dados estimados.</p>
+                    <p class="content-text text-sm mt-3">Aumento potencial de <strong>50-150% em leads qualificados</strong> (6-12 meses) via otimização de SEO, conteúdo, automação e funis eficazes.</p>
+                </div>
+            </div>
+             <div class="card">
+                <h4 class="subsection-title">💡 Análise Prescritiva: Recomendações Kanzeon</h4>
+                <p class="content-text text-sm">
+                    Para alavancar os resultados de Juan Pablo, a Kanzeon recomenda um foco em:
+                    <ul class="list-disc list-inside mt-2 text-sm space-y-1">
+                        <li><strong>Otimização da Presença Digital:</strong> Implementação de SEO técnico e de conteúdo, melhoria da experiência do usuário no site, e estratégias de engajamento social mais robustas.</li>
+                        <li><strong>Sofisticação Analítica e Automação:</strong> Adoção de ferramentas avançadas de analytics, implementação de pixels de rastreamento e CRM, e automação de marketing para nutrição de leads e processos internos.</li>
+                        <li><strong>Demonstração de Expertise em IA:</strong> Incorporar e evidenciar o uso de IA nas próprias operações de marketing e vendas de Juan Pablo, servindo como case prático.</li>
+                        <li><strong>Enriquecimento da Oferta para PMEs:</strong> Desenvolver relatórios de dados mais aprofundados, dashboards personalizados e insights baseados em IA que Juan Pablo possa oferecer aos seus clientes, agregando valor tangível.</li>
+                        <li><strong>Escalabilidade do Modelo de Negócios:</strong> Estruturar processos e utilizar tecnologias que permitam a Juan Pablo atender mais clientes eficientemente, sem comprometer a qualidade.</li>
+                    </ul>
+                </p>
+            </div>
+        </section>
+
+        <section id="proposta-valor" class="mb-10 sm:mb-12 scroll-mt-20 bg-blue-500 text-white p-6 sm:p-8 rounded-lg shadow-lg">
+            <h3 class="text-2xl sm:text-3xl font-bold text-center mb-5 sm:mb-6">Proposta de Valor Kanzeon</h3>
+            <p class="text-center text-blue-100 mb-6 sm:mb-8 text-sm">A Kanzeon propõe uma parceria para potencializar os resultados de Juan Pablo, focando em:</p>
+            <div class="grid md:grid-cols-3 gap-4 sm:gap-6">
+                <div class="bg-blue-600 p-4 sm:p-5 rounded-md shadow-md">
+                    <h4 class="text-md sm:text-lg font-semibold mb-1">1. Otimizar Sua Operação</h4>
+                    <p class="text-blue-50 text-xs sm:text-sm">Marketing e vendas com SEO avançado, automação, análise de dados e funis de alta performance.</p>
+                </div>
+                <div class="bg-blue-600 p-4 sm:p-5 rounded-md shadow-md">
+                    <h4 class="text-md sm:text-lg font-semibold mb-1">2. Enriquecer Seus Serviços</h4>
+                    <p class="text-blue-50 text-xs sm:text-sm">Ferramentas, relatórios e insights de IA para entregar resultados impactantes aos seus clientes PME.</p>
+                </div>
+                <div class="bg-blue-600 p-4 sm:p-5 rounded-md shadow-md">
+                    <h4 class="text-md sm:text-lg font-semibold mb-1">3. Parceria Estratégica</h4>
+                    <p class="text-blue-50 text-xs sm:text-sm">Colaborar no desenvolvimento de soluções inovadoras, combinando expertises para criar ofertas únicas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contato" class="text-center py-10 sm:py-12 scroll-mt-20">
+            <h3 class="section-title text-slate-800">Vamos Conversar?</h3>
+            <p class="content-text text-slate-600 mb-6 text-sm">Acreditamos no potencial de sinergia. Agende uma conversa para explorarmos como a Kanzeon pode impulsionar seus resultados.</p>
+            <a href="mailto:contato@kanzeon.com.br?subject=Análise Estratégica Interativa - Juan Pablo Motterle" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 px-6 sm:py-3 sm:px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-base">
+                Entrar em Contato
+            </a>
+             <p class="mt-3 text-xs text-slate-500">Ou visite: <a href="https://www.kanzeon.com.br" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">www.kanzeon.com.br</a></p>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 text-center p-5 sm:p-6 mt-8 sm:mt-12">
+        <p class="text-sm">&copy; <span id="currentYear"></span> Kanzeon. Análise Interativa.</p>
+        <p class="text-xs mt-1 text-slate-400">Esta aplicação é uma demonstração ilustrativa.</p>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        Chart.defaults.font.family = 'Inter';
+        Chart.defaults.color = '#475569'; // slate-600 for chart text
+
+        const cLevelTabsContainer = document.getElementById('cLevelTabs');
+        const cLevelContentDiv = document.getElementById('cLevelContent');
+
+        const cLevelData = {
+            cmo: {
+                title: "👔 CMO: Força da Marca e Funil de Aquisição",
+                observations: [
+                    "Tráfego e rankings indicam potencial de SEO e conteúdo.",
+                    "Engajamento social pode ser aprofundado e mais qualificado.",
+                    "Clareza dos CTAs e sofisticação de lead magnets são oportunidades.",
+                    "Qualidade e especificidade da prova social (depoimentos) são cruciais."
+                ],
+                kpis: [
+                    { label: "Tráfego Estimado Website (mensal)", value: "~300" },
+                    { label: "Ranking Médio Palavras-Chave", value: "#25" },
+                    { label: "Engajamento Estimado LinkedIn", value: "~1.5%" }
+                ],
+                suggestions: [
+                    "Otimização SEO on-page e off-page robusta.",
+                    "Estratégia de conteúdo focada em formatos de alto valor e distribuição otimizada.",
+                    "Refinamento de CTAs e funis de conversão no website com testes A/B.",
+                    "Campanhas para aumentar o engajamento qualificado e geração de leads no LinkedIn."
+                ]
+            },
+            cdo: {
+                title: "📊 CDO: Maturidade Analítica e Inteligência de Dados",
+                observations: [
+                    "Identificar tech stack atual (CMS, analytics, pixels, automação).",
+                    "Analisar qualidade e quantidade de backlinks para o domínio.",
+                    "Interações em conteúdo podem revelar percepção pública e temas de interesse.",
+                    "Benchmarking superficial com concorrentes diretos."
+                ],
+                kpis: [
+                    { label: "Backlinks Estimados", value: "~50" },
+                    { label: "Ferramentas de Análise Visíveis", value: "Básico (GA)" }
+                ],
+                suggestions: [
+                    "Implementação de tracking avançado (GTM, eventos customizados) e dashboards analíticos.",
+                    "Análise de dados comportamentais para otimizar a jornada do usuário no site.",
+                    "Estratégia proativa de aquisição de backlinks de alta qualidade.",
+                    "Uso de IA para análise de sentimento e tendências em comentários e menções."
+                ]
+            },
+            cto: {
+                title: "💻 CTO: Aplicação de Tecnologia e Inovação",
+                observations: [
+                    "Avaliar demonstrações (ou ausência) de uso de IA nos próprios processos de marketing/vendas.",
+                    "Analisar sofisticação da automação visível (e.g., funis de e-mail, agendamentos)."
+                ],
+                kpis: [
+                    { label: "Uso de IA Própria (Visível)", value: "Limitado" },
+                    { label: "Nível de Automação (Inferido)", value: "Básico/Intermediário" }
+                ],
+                suggestions: [
+                    "Implementação de ferramentas de IA para automação de marketing e vendas pessoais (e.g., lead scoring, chatbots inteligentes).",
+                    "Desenvolvimento de soluções de automação personalizadas para tarefas repetitivas.",
+                    "Exploração de novas tecnologias de IA para enriquecer a oferta de consultoria e criar diferenciais."
+                ]
+            },
+            cso: {
+                title: "📈 CSO: Estratégia e Escalabilidade",
+                observations: [
+                    "Alinhar a presença online e táticas de marketing com a promessa de soluções 'simples e brutais'.",
+                    "Inferir a escalabilidade do modelo atual de aquisição de clientes.",
+                    "Identificar como a Kanzeon pode ajudar a entregar mais valor aos clientes finais (PMEs)."
+                ],
+                kpis: [
+                    { label: "Alinhamento Discurso/Prática", value: "Oportunidade de Melhoria" },
+                    { label: "Potencial de Escalabilidade", value: "Moderado" }
+                ],
+                suggestions: [
+                    "Desenvolver um framework de dados para demonstrar o ROI das soluções de Juan Pablo de forma clara.",
+                    "Criar produtos de dados escaláveis (e.g., relatórios padrão, dashboards setoriais) para os clientes PME.",
+                    "Explorar modelos de parceria estratégica para co-desenvolver e co-entregar soluções inovadoras."
+                ]
+            }
+        };
+
+        function renderCLevelContent(level) {
+            const data = cLevelData[level];
+            if (!data) return;
+
+            let kpisHtml = '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">';
+            data.kpis.forEach(kpi => {
+                kpisHtml += `
+                    <div class="bg-slate-200 p-2 rounded text-center">
+                        <div class="kpi-value text-blue-600 text-base sm:text-lg">${kpi.value}</div>
+                        <div class="kpi-label text-xs sm:text-sm">${kpi.label}</div>
+                    </div>`;
+            });
+            kpisHtml += '</div>';
+            
+            cLevelContentDiv.innerHTML = `
+                <h5 class="text-lg font-semibold mb-3 text-slate-700">${data.title}</h5>
+                <p class="text-sm text-slate-600 mb-2 font-medium">Observações Principais:</p>
+                <ul class="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-0.5 mb-3">
+                    ${data.observations.map(obs => `<li>${obs}</li>`).join('')}
+                </ul>
+                ${data.kpis.length > 0 ? kpisHtml : ''}
+                <p class="text-sm text-slate-600 mb-2 font-medium">Sugestões Iniciais Kanzeon:</p>
+                <ul class="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-0.5">
+                    ${data.suggestions.map(sug => `<li>${sug}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        cLevelTabsContainer.addEventListener('click', function(event) {
+            if (event.target.classList.contains('interactive-tab')) {
+                cLevelTabsContainer.querySelectorAll('.interactive-tab').forEach(tab => tab.classList.remove('active'));
+                event.target.classList.add('active');
+                renderCLevelContent(event.target.dataset.clevel);
+            }
+        });
+
+        renderCLevelContent('cmo'); // Initial content
+
+        function processChartLabel(label, maxLength = 16) {
+            if (typeof label !== 'string') return label; // Already processed or not a string
+
+            if (label.length > maxLength) {
+                const words = label.split(' ');
+                let currentLine = '';
+                const lines = [];
+                for (const word of words) {
+                    if ((currentLine + word).length > maxLength && currentLine.length > 0) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
+                if (currentLine.trim().length > 0) {
+                    lines.push(currentLine.trim());
+                }
+                return lines.length > 0 ? lines : [label]; // Return array or original if no good split
+            }
+            return label;
+        }
+        
+        const chartTooltipTitleCallback = function(tooltipItems) {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+              return label.join(' ');
+            }
+            return label;
+        };
+
+        const metricasDigitaisCtx = document.getElementById('metricasDigitaisChart').getContext('2d');
+        new Chart(metricasDigitaisCtx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    processChartLabel('Tráfego Web Estimado (Mensal)'), 
+                    processChartLabel('Ranking Keywords (Score Ponderado)'), 
+                    processChartLabel('Engajamento Social Estimado (%)')
+                ],
+                datasets: [{
+                    label: 'Estimativa Atual',
+                    data: [300, 60, 1.5],
+                    backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(100, 116, 139, 0.7)', 'rgba(234, 88, 12, 0.7)'],
+                    borderColor: ['#3B82F6', '#64748B', '#EA580C'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                scales: { 
+                    x: { ticks: { color: '#475569' } }, 
+                    y: { ticks: { color: '#475569', autoSkip: false } } 
+                },
+                plugins: { 
+                    legend: { display: false }, 
+                    title: { display: true, text: 'Métricas Digitais (Estimativas)', color: '#1E293B', font: { size: 14 } },
+                    tooltip: { callbacks: { title: chartTooltipTitleCallback } }
+                }
+            }
+        });
+
+        const projecaoImpactoCtx = document.getElementById('projecaoImpactoChart').getContext('2d');
+        new Chart(projecaoImpactoCtx, {
+            type: 'line',
+            data: {
+                labels: ['Atual', 'Mês 3', 'Mês 6', 'Mês 9', 'Mês 12'],
+                datasets: [{
+                    label: 'Leads Qualificados (Projeção)',
+                    data: [50, 75, 100, 125, 150],
+                    borderColor: '#3B82F6', // blue-500
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true, tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { 
+                    y: { beginAtZero: false, ticks: { color: '#475569' } }, 
+                    x: { ticks: { color: '#475569' } }
+                },
+                plugins: { 
+                    legend: { display: false }, 
+                    title: { display: true, text: 'Projeção de Leads (Com Kanzeon)', color: '#1E293B', font: { size: 14 } },
+                    tooltip: { callbacks: { title: chartTooltipTitleCallback } }
+                }
+            }
+        });
+
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetElement = document.querySelector(this.getAttribute('href'));
+                if (targetElement) {
+                    const offset = document.querySelector('header').offsetHeight; // Height of sticky header
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
