@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Estratégica: ABMedia + Kanzeon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 320px;
+            }
+        }
+        .persona-btn.active {
+            background-color: #0d9488;
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .persona-btn {
+            transition: all 0.3s ease-in-out;
+        }
+        .kpi-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .details-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .details-panel.open {
+            max-height: 1000px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-700 mb-2">Análise Estratégica Interativa</h1>
+            <p class="text-lg md:text-xl text-slate-600">Potencializando a <span class="font-semibold">ABMedia</span> com a Inovação em Dados da <span class="font-semibold">Kanzeon</span></p>
+        </header>
+
+        <section id="intro" class="mb-12 bg-white p-6 rounded-xl shadow-sm">
+            <h2 class="text-2xl font-bold text-slate-800 mb-4">O Desafio: Da Execução à Parceria Estratégica</h2>
+            <p class="text-slate-600 leading-relaxed">
+                No competitivo mercado de marketing digital, agências como a ABMedia precisam ir além da execução de campanhas. O sucesso agora depende da capacidade de demonstrar valor de forma quantificável, otimizar operações e tomar decisões baseadas em dados precisos. Esta análise interativa demonstra como a parceria com a Kanzeon pode transformar dados em um ativo estratégico, capacitando cada diretoria a alcançar seus objetivos e impulsionar o crescimento sustentável. Explore abaixo como podemos resolver os desafios específicos de cada área da sua liderança.
+            </p>
+        </section>
+
+        <section id="dashboard" class="mb-12">
+            <h2 class="text-2xl font-bold text-center mb-6">Selecione uma Perspectiva de Liderança</h2>
+            <div id="persona-selector" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-10">
+            </div>
+
+            <div id="dashboard-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+        <section id="roadmap" class="bg-white p-6 md:p-8 rounded-xl shadow-sm">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">Roteiro para Geração de Valor: Próximos Passos</h2>
+             <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">Propomos um engajamento faseado para construir valor de forma incremental, garantindo alinhamento contínuo com as prioridades da ABMedia e minimizando riscos.</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="border border-slate-200 p-6 rounded-lg bg-stone-50">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-teal-100 text-teal-600 font-bold text-lg mb-4">1</div>
+                    <h3 class="font-semibold text-lg mb-2">Diagnóstico e Descoberta</h3>
+                    <p class="text-slate-600 text-sm">Coleta de dados iniciais (web analytics, redes sociais, dados internos com consentimento) e benchmarking para criar um panorama completo e identificar as maiores oportunidades.</p>
+                </div>
+                <div class="border border-slate-200 p-6 rounded-lg bg-stone-50">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-teal-100 text-teal-600 font-bold text-lg mb-4">2</div>
+                    <h3 class="font-semibold text-lg mb-2">Relatório Personalizado</h3>
+                    <p class="text-slate-600 text-sm">Apresentação de um relatório de diagnóstico destacando pontos fortes, áreas críticas para otimização e uma demonstração prática de como a plataforma Kanzeon pode resolver esses desafios.</p>
+                </div>
+                <div class="border border-slate-200 p-6 rounded-lg bg-stone-50">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-teal-100 text-teal-600 font-bold text-lg mb-4">3</div>
+                    <h3 class="font-semibold text-lg mb-2">Co-criação do Plano</h3>
+                    <p class="text-slate-600 text-sm">Workshop colaborativo com os stakeholders da ABMedia para, em conjunto, criarmos um roadmap de implementação estratégico, com cronogramas, KPIs e responsabilidades claras.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="text-center p-4 mt-8">
+        <p class="text-sm text-slate-500">Kanzeon Inovação Tecnológica em Dados &copy; 2024</p>
+    </footer>
+
+    <script>
+        const appData = {
+            cmo: {
+                name: 'CMO',
+                icon: '📢',
+                description: 'Foco em demonstrar a eficácia das estratégias de marketing e otimizar a aquisição e engajamento de clientes.',
+                kpis: [
+                    {
+                        id: 'cac_ltv',
+                        title: 'CAC vs. LTV',
+                        chartType: 'bar',
+                        context: 'Compara o Custo de Aquisição (CAC) com o Valor do Cliente (LTV). A proporção ideal de 3:1 (LTV:CAC) indica um modelo de negócio saudável e escalável.',
+                        challenge: 'Dificuldade em calcular o CAC real por canal e justificar investimentos de marketing sem uma visão clara do LTV.',
+                        solution: 'Implementação de sistemas de rastreamento detalhado para calcular CAC e LTV por canal e campanha, utilizando modelos preditivos para estimar o valor futuro do cliente.',
+                        data: {
+                            labels: ['CAC', 'LTV'],
+                            datasets: [{
+                                label: 'Valor (R$)',
+                                data: [1200, 3600],
+                                backgroundColor: ['#fca5a5', '#6ee7b7'],
+                                borderColor: ['#ef4444', '#10b981'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: { y: { beginAtZero: true } },
+                            plugins: { legend: { display: false } }
+                        }
+                    },
+                    {
+                        id: 'lead_conversion',
+                        title: 'Taxa de Conversão de Leads',
+                        chartType: 'doughnut',
+                        context: 'Percentual de leads que se tornam clientes. Otimizar esta taxa é crucial para a eficiência do funil de vendas. O benchmark brasileiro é de 3.19%.',
+                        challenge: 'Baixas taxas de conversão e falta de visibilidade sobre os gargalos no funil de vendas.',
+                        solution: 'Análise do comportamento do usuário, testes A/B em landing pages, e segmentação avançada para personalizar a comunicação e otimizar cada etapa da jornada de conversão.',
+                        data: {
+                            labels: ['Convertidos', 'Não Convertidos'],
+                            datasets: [{
+                                data: [3.19, 96.81],
+                                backgroundColor: ['#14b8a6', '#f1f5f9'],
+                                hoverOffset: 4
+                            }]
+                        }
+                    },
+                    {
+                        id: 'engagement_rate',
+                        title: 'Engajamento em Mídias Sociais',
+                        chartType: 'bar',
+                        context: 'Uma taxa de engajamento entre 1% e 5% é considerada boa. A análise de sentimento fornece o contexto por trás dos números.',
+                        challenge: 'Métricas de vaidade (curtidas, seguidores) que não se traduzem em resultados de negócio.',
+                        solution: 'Implementação de ferramentas de social listening e análise de sentimento para entender o "quê" e o "porquê" do engajamento, focando em interações que geram valor real.',
+                        data: {
+                            labels: ['Taxa Média', 'Benchmark Bom', 'Benchmark Ótimo'],
+                            datasets: [{
+                                label: 'Engajamento (%)',
+                                data: [1.8, 3, 5],
+                                backgroundColor: ['#fde047', '#6ee7b7', '#2dd4bf'],
+                            }]
+                        },
+                         options: {
+                            scales: { y: { beginAtZero: true, max: 6 } },
+                            plugins: { legend: { display: false } }
+                        }
+                    }
+                ]
+            },
+            cfo: {
+                name: 'CFO',
+                icon: '💰',
+                description: 'Foco na saúde financeira, rentabilidade e no retorno sobre o investimento das iniciativas de marketing e operacionais.',
+                kpis: [
+                     {
+                        id: 'romi',
+                        title: 'Retorno sobre Investimento (ROMI)',
+                        chartType: 'doughnut',
+                        context: 'Mede quanto de receita é gerada para cada real investido em marketing. Essencial para otimização de orçamento.',
+                        challenge: 'Dificuldade em conectar gastos de marketing com a receita gerada, resultando em uma atribuição imprecisa do retorno.',
+                        solution: 'Implementação de modelos de atribuição multicanal avançados para calcular o ROMI de forma granular por campanha, canal e cliente, oferecendo uma visão clara do impacto financeiro.',
+                         data: {
+                            labels: ['Retorno', 'Investimento'],
+                            datasets: [{
+                                data: [400, 100],
+                                backgroundColor: ['#14b8a6', '#f1f5f9'],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            plugins: { tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}%` } } }
+                        }
+                    },
+                    {
+                        id: 'profit_per_project',
+                        title: 'Rentabilidade por Projeto',
+                        chartType: 'bar',
+                        context: 'Identifica quais tipos de projetos ou clientes são mais lucrativos, orientando o foco comercial e a estratégia de precificação.',
+                        challenge: 'Falta de visão clara sobre a rentabilidade individual de cada projeto, mascarando os que geram prejuízo.',
+                        solution: 'Desenvolvimento de dashboards financeiros que cruzam dados de custos (horas, ferramentas, mídia) com a receita, permitindo otimizar o portfólio de serviços.',
+                         data: {
+                            labels: ['Projeto A', 'Projeto B', 'Projeto C', 'Projeto D'],
+                            datasets: [{
+                                label: 'Margem de Lucro (%)',
+                                data: [45, 25, -10, 60],
+                                backgroundColor: (context) => context.raw >= 0 ? '#6ee7b7' : '#fca5a5',
+                            }]
+                        },
+                         options: {
+                            scales: { y: { beginAtZero: true } },
+                            plugins: { legend: { display: false } }
+                        }
+                    }
+                ]
+            },
+            coo: {
+                name: 'COO',
+                icon: '⚙️',
+                description: 'Foco na eficiência dos processos, capacidade de entrega da agência e na satisfação e retenção de clientes.',
+                kpis: [
+                    {
+                        id: 'team_utilization',
+                        title: 'Taxa de Utilização da Equipe',
+                        chartType: 'doughnut',
+                        context: 'Percentual do tempo da equipe dedicado a projetos faturáveis. Maximizar esta taxa sem sobrecarregar a equipe aumenta a rentabilidade.',
+                        challenge: 'Custos ociosos devido à baixa utilização e dificuldade em alocar recursos de forma eficiente.',
+                        solution: 'Implementação de ferramentas para monitorar a alocação de tempo por projeto, conectando esses dados à rentabilidade para otimizar o planejamento de capacidade.',
+                         data: {
+                            labels: ['Faturável', 'Não Faturável'],
+                            datasets: [{
+                                data: [75, 25],
+                                backgroundColor: ['#14b8a6', '#f1f5f9'],
+                                hoverOffset: 4
+                            }]
+                        }
+                    },
+                     {
+                        id: 'client_retention',
+                        title: 'Taxa de Retenção de Clientes',
+                        chartType: 'bar',
+                        context: 'Reter clientes é mais barato que adquirir novos. Um aumento de 5% na retenção pode aumentar os lucros em mais de 25%.',
+                        challenge: 'Alta rotatividade de clientes (churn) indicando problemas na entrega, no valor percebido ou no alinhamento de expectativas.',
+                        solution: 'Desenvolvimento de modelos de propensão ao churn que identificam clientes em risco, permitindo a criação de estratégias proativas e personalizadas de retenção.',
+                        data: {
+                            labels: ['Taxa Atual', 'Meta com Kanzeon'],
+                            datasets: [{
+                                label: 'Retenção (%)',
+                                data: [78, 90],
+                                backgroundColor: ['#a5f3fc', '#06b6d4'],
+                            }]
+                        },
+                        options: {
+                            scales: { y: { beginAtZero: true, max: 100 } },
+                            plugins: { legend: { display: false } }
+                        }
+                    },
+                    {
+                        id: 'project_completion',
+                        title: 'Tempo Médio de Conclusão',
+                        chartType: 'line',
+                        context: 'Mede a agilidade na entrega dos serviços. Reduzir este tempo sem comprometer a qualidade melhora a satisfação e a capacidade da agência.',
+                        challenge: 'Atrasos na entrega de projetos que frustram clientes e corroem a rentabilidade.',
+                        solution: 'Implementação de sistemas de gestão baseados em dados para identificar gargalos, otimizar fluxos de trabalho e reduzir o tempo médio de ciclo dos projetos.',
+                        data: {
+                            labels: ['Q1', 'Q2', 'Q3 (Proj.)', 'Q4 (Proj.)'],
+                            datasets: [{
+                                label: 'Dias',
+                                data: [45, 42, 35, 32],
+                                fill: false,
+                                borderColor: '#0d9488',
+                                tension: 0.1
+                            }]
+                        },
+                         options: {
+                            plugins: { legend: { display: false } }
+                        }
+                    }
+                ]
+            },
+            cdo: {
+                name: 'CDO',
+                icon: '📊',
+                description: 'Foco na qualidade e utilização estratégica dos dados para tomada de decisão, otimização e inovação.',
+                kpis: [
+                    {
+                        id: 'data_quality',
+                        title: 'Qualidade e Cobertura dos Dados',
+                        chartType: 'bar',
+                        context: 'Avalia se os dados coletados são precisos, completos e relevantes. A base para qualquer análise confiável.',
+                        challenge: 'Decisões baseadas em dados imprecisos ou incompletos ("lixo entra, lixo sai"), minando a confiança nas análises.',
+                        solution: 'Implementação de um framework de governança de dados, com ferramentas de validação, limpeza e dashboards para monitoramento contínuo da qualidade dos dados.',
+                        data: {
+                            labels: ['Precisão', 'Completude', 'Consistência', 'Atualidade'],
+                            datasets: [{
+                                label: 'Score de Qualidade (%)',
+                                data: [65, 70, 55, 80],
+                                backgroundColor: ['#5eead4', '#2dd4bf', '#14b8a6', '#0d9488'],
+                            }]
+                        },
+                        options: {
+                             indexAxis: 'y',
+                             scales: { x: { beginAtZero: true, max: 100 } },
+                             plugins: { legend: { display: false } }
+                        }
+                    },
+                     {
+                        id: 'time_to_report',
+                        title: 'Tempo para Geração de Relatórios',
+                        chartType: 'bar',
+                        context: 'Reduzir o tempo gasto em tarefas manuais de compilação de dados libera a equipe para focar em análises estratégicas.',
+                        challenge: 'Processos manuais e demorados que consomem tempo precioso da equipe e atrasam a entrega de insights.',
+                        solution: 'Automação do ciclo de vida dos relatórios, desde a coleta e integração de dados de múltiplas fontes até a visualização em dashboards interativos.',
+                        data: {
+                            labels: ['Processo Manual', 'Com Kanzeon'],
+                            datasets: [{
+                                label: 'Horas por Semana',
+                                data: [16, 2],
+                                backgroundColor: ['#fca5a5', '#6ee7b7'],
+                            }]
+                        },
+                         options: {
+                            plugins: { legend: { display: false } }
+                        }
+                    }
+                ]
+            }
+        };
+
+        let currentPersona = 'cmo';
+        let charts = {};
+
+        const personaSelector = document.getElementById('persona-selector');
+        const dashboardContent = document.getElementById('dashboard-content');
+
+        function clearDashboard() {
+            dashboardContent.innerHTML = '';
+            Object.values(charts).forEach(chart => chart.destroy());
+            charts = {};
+        }
+
+        function renderDashboard(personaId) {
+            currentPersona = personaId;
+            clearDashboard();
+            
+            const personaData = appData[personaId];
+            
+            personaData.kpis.forEach(kpi => {
+                const card = document.createElement('div');
+                card.className = 'kpi-card bg-white rounded-xl overflow-hidden shadow-sm cursor-pointer';
+                card.innerHTML = `
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-slate-800">${kpi.title}</h3>
+                        <p class="text-xs text-slate-500 mb-4">${kpi.context}</p>
+                        <div class="chart-container">
+                            <canvas id="chart-${kpi.id}"></canvas>
+                        </div>
+                    </div>
+                    <div class="details-panel bg-stone-50 px-4 border-t border-slate-200">
+                        <div class="py-2">
+                           <h4 class="font-semibold text-sm text-slate-700 mb-1">Desafio Típico:</h4>
+                           <p class="text-sm text-slate-600">${kpi.challenge}</p>
+                        </div>
+                         <div class="py-2">
+                           <h4 class="font-semibold text-sm text-teal-700 mb-1">Solução Kanzeon:</h4>
+                           <p class="text-sm text-slate-600">${kpi.solution}</p>
+                        </div>
+                    </div>
+                `;
+                dashboardContent.appendChild(card);
+                
+                const ctx = document.getElementById(`chart-${kpi.id}`).getContext('2d');
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    ...kpi.options
+                };
+                charts[kpi.id] = new Chart(ctx, {
+                    type: kpi.chartType,
+                    data: kpi.data,
+                    options: chartOptions
+                });
+            });
+
+            document.querySelectorAll('.kpi-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const detailsPanel = card.querySelector('.details-panel');
+                    detailsPanel.classList.toggle('open');
+                });
+            });
+
+            updatePersonaButtons();
+        }
+
+        function renderPersonaButtons() {
+            Object.keys(appData).forEach(personaId => {
+                const persona = appData[personaId];
+                const button = document.createElement('button');
+                button.className = 'persona-btn px-4 py-2 rounded-full text-sm font-semibold bg-white text-slate-700 shadow-sm hover:bg-teal-500 hover:text-white';
+                button.textContent = `${persona.icon} ${persona.name}`;
+                button.dataset.persona = personaId;
+                button.addEventListener('click', () => renderDashboard(personaId));
+                personaSelector.appendChild(button);
+            });
+        }
+        
+        function updatePersonaButtons() {
+            document.querySelectorAll('.persona-btn').forEach(btn => {
+                if (btn.dataset.persona === currentPersona) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        window.onload = () => {
+            renderPersonaButtons();
+            renderDashboard(currentPersona);
+        };
+    </script>
+</body>
+</html>
