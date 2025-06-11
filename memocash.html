@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanzeon & MemoCash: Plano de Ação Interativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Subtle Accents -->
+    <!-- Application Structure Plan: A tab-based navigation structure was chosen to logically segment the vast amount of information from the report. This allows the user to focus on one key area at a time (Market Analysis, Product Blueprint, Strategic Roadmap) without overwhelming them. Within the 'Market Analysis' tab, a secondary vertical navigation allows for easy deep-dives into each of the 8 retail segments. This hierarchical structure promotes discoverability and a clear user flow. The primary interaction is clicking tabs to switch between high-level sections and selecting specific retail segments to view detailed KPIs, challenges, and insights, supported by interactive charts. This design prioritizes usability and comprehension of a complex, multi-faceted report. -->
+    <!-- Visualization & Content Choices: Report Info: KPIs for 8 retail segments. -> Goal: Compare performance metrics. -> Viz/Presentation Method: Interactive Bar Chart (Chart.js) and structured HTML tables. -> Interaction: Users select a segment, and the chart dynamically updates to show its specific KPIs and benchmarks. Text blocks update to show challenges and insight narratives. -> Justification: Bar charts are excellent for comparing discrete values (KPIs vs. Benchmarks). Dynamic updates on segment selection make the experience fluid and focused, preventing information overload. Report Info: Proposed project phases. -> Goal: Organize a process. -> Viz/Presentation Method: A styled timeline using HTML/CSS/Tailwind. -> Interaction: Static visual representation. -> Justification: A timeline clearly communicates sequence and duration, which is the primary goal for this information. Report Info: ROI Calculation. -> Goal: Inform and persuade. -> Viz/Presentation Method: A detailed, styled HTML table that simulates a mini-spreadsheet. -> Interaction: Static, for easy reading and comprehension. -> Justification: A table is the clearest way to present this type of financial framework, making the calculation transparent and easy to follow. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #3f3c3a;
+        }
+        .tab-active {
+            border-bottom-color: #A88B79;
+            color: #A88B79;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            border-bottom-color: transparent;
+            color: #78716c;
+        }
+        .segment-active {
+            background-color: #E7E1DC;
+            color: #3f3c3a;
+            border-left-color: #A88B79;
+        }
+        .segment-inactive {
+            border-left-color: transparent;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E7E1DC;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: all 0.3s ease-in-out;
+        }
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -2px rgb(0 0 0 / 0.07);
+            transform: translateY(-2px);
+        }
+        .section-fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen">
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl font-bold" style="color: #A88B79;">K</span>
+                        <div class="flex flex-col">
+                           <h1 class="text-xl font-bold text-gray-800">Plano de Ação para Geração de Valor</h1>
+                           <p class="text-sm text-gray-500">Kanzeon & MemoCash</p>
+                        </div>
+                    </div>
+                    <nav class="hidden md:flex space-x-6">
+                         <button data-tab="analise" class="tab-btn text-sm font-medium border-b-2 pb-1 tab-active">Análise de Mercado</button>
+                         <button data-tab="blueprint" class="tab-btn text-sm font-medium border-b-2 pb-1 tab-inactive">Blueprint de Produto</button>
+                         <button data-tab="roteiro" class="tab-btn text-sm font-medium border-b-2 pb-1 tab-inactive">Roteiro Estratégico</button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Seção Análise de Mercado -->
+            <section id="analise" class="tab-content section-fade-in">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Análise de Inteligência por Segmento</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-500">Mergulhe nas particularidades de cada um dos oito segmentos de varejo atendidos pela MemoCash para entender seus desafios, KPIs críticos e como os dados podem gerar ações de melhoria.</p>
+                </div>
+                <div class="flex flex-col md:flex-row gap-8">
+                    <aside class="md:w-1/4 lg:w-1/5">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-700">Selecione o Segmento</h3>
+                        <nav id="segment-nav" class="flex flex-col space-y-1">
+                        </nav>
+                    </aside>
+                    <div class="md:w-3/4 lg:w-4/5">
+                        <div id="segment-content" class="space-y-8">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Blueprint de Produto -->
+            <section id="blueprint" class="tab-content hidden section-fade-in">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Blueprint de Evolução do Produto</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-500">Veja como o sistema MemoCash pode evoluir de uma ferramenta operacional para uma plataforma de inteligência proativa, com dashboards acionáveis e alertas inteligentes.</p>
+                </div>
+
+                <div class="space-y-16">
+                    <!-- Modelo de Dados -->
+                    <div class="card p-6 md:p-8">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Modelo de Dados Necessário</h3>
+                        <p class="text-gray-600 mb-6">Para calcular os KPIs e alimentar os insights, o sistema precisa capturar dados de forma estruturada. A seguir, os pontos de dados essenciais a serem garantidos, complementando as funcionalidades atuais.</p>
+                        <ul class="space-y-4 text-gray-700">
+                             <li class="flex items-start"><span class="mr-3 text-xl" style="color:#A88B79;">&#x2713;</span><span><strong>Dados Transacionais Detalhados:</strong> Timestamps precisos, ID do cliente, detalhes do item, descontos, canal de venda e ID do vendedor.</span></li>
+                            <li class="flex items-start"><span class="mr-3 text-xl" style="color:#A88B79;">&#x2713;</span><span><strong>Dados de Estoque e Compras:</strong> Datas de entrada/saída, custo de aquisição, ID do fornecedor e motivos de descarte/perda.</span></li>
+                             <li class="flex items-start"><span class="mr-3 text-xl" style="color:#A88B79;">&#x2713;</span><span><strong>Dados Operacionais Específicos:</strong> Capacidade de mesas (Restaurantes), lotes de produção (Padarias), atributos de grade (Vestuário), dados de entrega (Distribuidoras).</span></li>
+                            <li class="flex items-start"><span class="mr-3 text-xl" style="color:#A88B79;">&#x2713;</span><span><strong>Dados de Metas e Orçamentos:</strong> Capacidade do usuário inserir metas financeiras e operacionais para os KPIs.</span></li>
+                        </ul>
+                    </div>
+
+                     <!-- Dashboards Acionáveis -->
+                    <div class="card p-6 md:p-8">
+                         <h3 class="text-2xl font-semibold text-gray-800 mb-2">Design de Dashboards Acionáveis</h3>
+                         <p class="text-gray-600 mb-6">Apresentamos dois exemplos de dashboards projetados para que o gestor entenda a saúde do seu negócio em 60 segundos.</p>
+                         
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Dashboard Restaurante -->
+                            <div class="border border-gray-200 rounded-lg p-6">
+                                <h4 class="text-xl font-semibold text-gray-700 mb-4">Dashboard: Restaurantes</h4>
+                                <p class="text-sm text-gray-500 mb-4">Foco em CMV, ticket médio e eficiência operacional para um diagnóstico rápido.</p>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>Receita (Mês)</span><span class="font-bold text-green-600">R$ 52.120 <span class="text-xs font-normal">(+5%)</span></span></div>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>CMV Médio</span><span class="font-bold text-red-600">38% <span class="text-xs font-normal">(Acima da meta)</span></span></div>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>Ticket Médio</span><span class="font-bold text-green-600">R$ 45,50 <span class="text-xs font-normal">(+3%)</span></span></div>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>Top Produto</span><span class="font-bold">Prato Executivo</span></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-4 text-center">Gráficos de Vendas por Hora e CMV por Categoria apareceriam aqui.</p>
+                            </div>
+
+                            <!-- Dashboard Vestuário -->
+                            <div class="border border-gray-200 rounded-lg p-6">
+                                <h4 class="text-xl font-semibold text-gray-700 mb-4">Dashboard: Vestuário</h4>
+                                <p class="text-sm text-gray-500 mb-4">Foco em giro de estoque, margem e performance de coleções.</p>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>Receita (Mês)</span><span class="font-bold text-green-600">R$ 78.450 <span class="text-xs font-normal">(+8%)</span></span></div>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>Giro de Estoque</span><span class="font-bold text-yellow-600">2.1x <span class="text-xs font-normal">(Atenção)</span></span></div>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>Margem Bruta Média</span><span class="font-bold text-green-600">55%</span></div>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-md"><span>Itens em Markdown</span><span class="font-bold">15% do estoque</span></div>
+                                </div>
+                                 <p class="text-xs text-gray-400 mt-4 text-center">Gráficos de Curva ABC e Produtos Parados apareceriam aqui.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Alertas Inteligentes -->
+                    <div class="card p-6 md:p-8">
+                         <h3 class="text-2xl font-semibold text-gray-800 mb-4">Motor de Insights Proativos (Alertas Inteligentes)</h3>
+                         <p class="text-gray-600 mb-6">O sistema se torna um consultor virtual, monitorando a operação e notificando o gestor sobre pontos críticos.</p>
+                         <div class="space-y-6">
+                            <div class="p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                                <p class="font-semibold text-yellow-800">Alerta de CMV Alto</p>
+                                <p class="text-sm text-yellow-700 mt-1"><strong>GATILHO:</strong> CMV do 'Prato X' acima de 40% por 3 dias. <strong>MENSAGEM:</strong> "Atenção! Custo do 'Prato X' consistentemente alto. Verifique preço dos insumos ou desperdícios."</p>
+                            </div>
+                            <div class="p-4 rounded-lg bg-red-50 border border-red-200">
+                                <p class="font-semibold text-red-800">Alerta de Estoque Crítico</p>
+                                <p class="text-sm text-red-700 mt-1"><strong>GATILHO:</strong> Produto 'Curva A' atinge ponto de pedido e previsão indica ruptura. <strong>MENSAGEM:</strong> "Risco de ruptura do 'Produto Y' em 2 dias. Sugerimos antecipar o pedido."</p>
+                            </div>
+                             <div class="p-4 rounded-lg bg-blue-50 border border-blue-200">
+                                <p class="font-semibold text-blue-800">Alerta de Produto Encalhado</p>
+                                <p class="text-sm text-blue-700 mt-1"><strong>GATILHO:</strong> Item de vestuário sem vendas por 90 dias. <strong>MENSAGEM:</strong> "'Vestido Floral' parado há 90 dias. Considere incluí-lo em uma promoção."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Roteiro Estratégico -->
+            <section id="roteiro" class="tab-content hidden section-fade-in">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Roteiro Estratégico para Kanzeon</h2>
+                    <p class="mt-3 max-w-2xl mx-auto text-lg text-gray-500">Um plano conciso para apresentar à MemoCash, articulando a proposta de valor, as fases do projeto e o cálculo de ROI para o cliente final.</p>
+                </div>
+
+                <div class="space-y-16">
+                    <!-- Proposta de Valor -->
+                    <div class="card p-6 md:p-8 text-center">
+                         <h3 class="text-2xl font-semibold text-gray-800 mb-4">Proposta de Valor Central</h3>
+                         <p class="max-w-3xl mx-auto text-gray-600">A parceria com a Kanzeon transformará o sistema MemoCash em uma plataforma de inteligência de negócios proativa e segmentada. Isso irá diferenciar a MemoCash da concorrência, aumentar exponencialmente o ROI para seus clientes PMEs, fortalecer a lealdade e reduzir o churn. Ao oferecer dashboards customizados e alertas inteligentes, a MemoCash deixará de ser um fornecedor de software para se tornar um parceiro estratégico indispensável, capacitando seus clientes a reduzir custos, aumentar receitas e navegar com segurança nos desafios do varejo de 2025.</p>
+                    </div>
+
+                    <!-- Fases do Projeto -->
+                    <div class="card p-6 md:p-8">
+                         <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Plano de Projeto Sugerido em 3 Fases</h3>
+                         <div class="relative">
+                            <div class="absolute left-1/2 -ml-px h-full w-0.5 bg-gray-300" aria-hidden="true"></div>
+                            <div class="relative flex flex-col items-center text-center space-y-12">
+                                <!-- Fase 1 -->
+                                <div class="w-full lg:w-3/5">
+                                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                        <div class="mb-2"><span class="inline-block bg-brown-100 text-brown-800 text-xs font-semibold px-2.5 py-0.5 rounded-full" style="background-color: #E7E1DC; color: #A88B79;">Fase 1</span></div>
+                                        <h4 class="text-lg font-semibold text-gray-800">Diagnóstico e Prova de Conceito (PoC)</h4>
+                                        <p class="text-sm text-gray-500 mt-1">6-8 semanas</p>
+                                        <p class="text-gray-600 mt-3">Workshops de alinhamento, análise técnica, seleção de segmentos piloto e desenvolvimento de uma PoC para validar as hipóteses e refinar o escopo do MVP.</p>
+                                    </div>
+                                </div>
+                                 <!-- Fase 2 -->
+                                <div class="w-full lg:w-3/5">
+                                     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                        <div class="mb-2"><span class="inline-block bg-brown-100 text-brown-800 text-xs font-semibold px-2.5 py-0.5 rounded-full" style="background-color: #E7E1DC; color: #A88B79;">Fase 2</span></div>
+                                        <h4 class="text-lg font-semibold text-gray-800">Desenvolvimento do MVP</h4>
+                                        <p class="text-sm text-gray-500 mt-1">12-16 semanas</p>
+                                        <p class="text-gray-600 mt-3">Desenvolvimento ágil dos dashboards e do motor de alertas para os segmentos priorizados, com testes rigorosos e criação de material de treinamento.</p>
+                                    </div>
+                                </div>
+                                 <!-- Fase 3 -->
+                                <div class="w-full lg:w-3/5">
+                                     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                                        <div class="mb-2"><span class="inline-block bg-brown-100 text-brown-800 text-xs font-semibold px-2.5 py-0.5 rounded-full" style="background-color: #E7E1DC; color: #A88B79;">Fase 3</span></div>
+                                        <h4 class="text-lg font-semibold text-gray-800">Lançamento, Iteração e Escala</h4>
+                                        <p class="text-sm text-gray-500 mt-1">Contínua</p>
+                                        <p class="text-gray-600 mt-3">Lançamento para um grupo piloto, coleta de feedback, iteração contínua do produto e expansão gradual para toda a base de clientes, com monitoramento do ROI.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ROI Framework -->
+                    <div class="card p-6 md:p-8">
+                         <h3 class="text-2xl font-semibold text-gray-800 mb-2 text-center">Framework de Cálculo de ROI para o Cliente Final</h3>
+                        <p class="text-gray-600 mb-6 max-w-3xl mx-auto text-center">Uma ferramenta para a equipe comercial da MemoCash demonstrar como o sistema se paga, convertendo funcionalidades em valor financeiro tangível.</p>
+                        
+                        <div class="overflow-x-auto">
+                            <div class="min-w-full inline-block align-middle">
+                                <div class="border rounded-lg overflow-hidden">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Métrica de Valor Potencial</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimativa de Melhoria Mensal</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Monetário Estimado (R$)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200 bg-white">
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">Redução de Desperdício (Otimização CMV)</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2% sobre CMV</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">R$ 350,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">Aumento do Ticket Médio</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5%</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">R$ 750,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">Otimização de Compras</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">1% sobre CMV</td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">R$ 175,00</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="bg-gray-50">
+                                            <tr>
+                                                <td colspan="2" class="px-6 py-3 text-right text-sm font-medium text-gray-800">Benefício Total Estimado Mensal</td>
+                                                <td class="px-6 py-3 text-left text-sm font-bold text-green-600">R$ 1.275,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="px-6 py-3 text-right text-sm font-medium text-gray-500">Mensalidade do Software (Exemplo)</td>
+                                                <td class="px-6 py-3 text-left text-sm font-bold text-red-600">- R$ 300,00</td>
+                                            </tr>
+                                            <tr class="bg-green-50">
+                                                <td colspan="2" class="px-6 py-4 text-right text-sm font-bold text-gray-800">Retorno Líquido Mensal Estimado</td>
+                                                <td class="px-6 py-4 text-left text-base font-extrabold text-green-700">R$ 975,00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2 text-center">Exemplo ilustrativo para um restaurante com faturamento de R$ 50.000/mês e CMV de 35%.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const data = {
+            "restaurantes": {
+                name: "Restaurantes",
+                icon: "🍴",
+                intro: "Restaurantes operam em um ambiente dinâmico, onde a eficiência operacional e a satisfação do cliente são cruciais para a rentabilidade. O sistema ajuda a controlar custos, otimizar o uso do espaço e entender o comportamento do consumidor.",
+                kpis: [
+                    { name: "CMV", value: 35, benchmark: 35, unit: "%", narrative: "O Custo de Mercadorias Vendidas (CMV) ideal é entre 28-35%. O sistema alerta se o CMV de um prato subir, sugerindo renegociação de insumos, ajuste de porção ou de preço." },
+                    { name: "Ticket Médio", value: 45, benchmark: 48, unit: "R$", narrative: "Aumentar o ticket médio é vital. O sistema identifica horários de baixo consumo, sugerindo 'Combos da Tarde' ou promoções estratégicas para elevar o faturamento." },
+                    { name: "Taxa de Ocupação", value: 70, benchmark: 80, unit: "%", narrative: "Maximizar o giro de mesas aumenta a receita por m². O sistema identifica baixa ocupação em certos dias, sugerindo menus executivos ou programas de fidelidade para atrair mais clientes." },
+                    { name: "Margem de Lucro", value: 18, benchmark: 20, unit: "%", narrative: "Uma margem líquida saudável é acima de 20%. A ferramenta ajuda a analisar a rentabilidade por prato para otimizar o cardápio e focar nos itens mais lucrativos." },
+                ],
+                challenges: [
+                    "Gestão de custos e precificação frente à inflação de insumos.",
+                    "Escassez, qualificação e retenção de mão de obra qualificada.",
+                    "Controle de desperdício de alimentos e gestão de perecíveis."
+                ]
+            },
+            "padarias": {
+                name: "Padarias",
+                icon: "🥖",
+                intro: "Negócios de alta frequência com desafios únicos de produção diária e perecibilidade. O foco é minimizar perdas e otimizar o mix de produtos de fabricação própria e revenda.",
+                kpis: [
+                    { name: "Perdas/Desperdício", value: 5, benchmark: 2, unit: "%", narrative: "O sistema identifica picos de desperdício por produto e dia. Se 30% dos 'Sonhos' de quinta são descartados, ele sugere reduzir a produção ou criar uma 'Promoção Relâmpago'." },
+                    { name: "CMV (Produção Própria)", value: 40, benchmark: 35, unit: "%", narrative: "O CMV da produção própria deve ser rigidamente controlado. O sistema ajuda a revisar fichas técnicas e a buscar fornecedores mais eficientes para insumos como farinha." },
+                    { name: "Ticket Médio", value: 15, benchmark: 18, unit: "R$", narrative: "Para um ticket médio estagnado, o sistema pode sugerir treinar atendentes para venda sugestiva de itens de confeitaria na hora do pagamento do pão." }
+                ],
+                challenges: [
+                    "Controle de validade e gestão de desperdício (produtos com vida útil de horas).",
+                    "Aumento do custo de insumos essenciais como farinha de trigo.",
+                    "Concorrência acirrada e necessidade de aumentar a produtividade."
+                ]
+            },
+            "bares": {
+                name: "Bares",
+                icon: "🍺",
+                intro: "Compartilham desafios com restaurantes, mas com particularidades na gestão de bebidas, ambiente e perfil de consumo. O controle de doses e a margem por tipo de bebida são cruciais.",
+                kpis: [
+                    { name: "CMV Bebidas", value: 25, benchmark: 25, unit: "%", narrative: "Bebidas têm CMV menor que alimentos. O sistema com 'Ficha Técnica Dinâmica' para drinks controla o custo por dose, identificando desperdícios ou desvios." },
+                    { name: "Margem de Lucro (Coquetéis)", value: 65, benchmark: 60, unit: "%", narrative: "Coquetéis têm alta margem. O sistema identifica os mais rentáveis, sugerindo promoções como 'compre um coquetel premium e ganhe um petisco de baixo CMV'." },
+                    { name: "Giro de Estoque (Destilados)", value: 1.5, benchmark: 2, unit: "x/ano", narrative: "Para um whisky caro com baixo giro, o sistema sugere criar um 'drink do mês' com ele ou oferecê-lo em doses promocionais para não imobilizar capital." }
+                ],
+                challenges: [
+                    "Gestão de estoque de bebidas (controle de doses, desperdício).",
+                    "Mão de obra qualificada e com baixa rotatividade para o bar e salão.",
+                    "Flutuação de demanda (sazonalidade, dias da semana, eventos)."
+                ]
+            },
+            "lojas": {
+                name: "Lojas (Varejo Geral)",
+                icon: "🛍️",
+                intro: "O varejo geral exige uma gestão de estoque eficiente para evitar capital parado e uma boa margem para competir. Otimizar o giro e a rentabilidade por m² é fundamental.",
+                kpis: [
+                    { name: "Giro de Estoque", value: 2, benchmark: 3, unit: "x/ano", narrative: "Se um produto tem giro de 0.5x/ano, o sistema alerta. A ação é liquidar o estoque para liberar espaço e capital para itens de maior giro e rentabilidade." },
+                    { name: "Margem de Contribuição", value: 40, benchmark: 45, unit: "%", narrative: "Se uma categoria tem margem baixa, o sistema ajuda a analisar os custos para renegociar com fornecedores, revisar preços ou focar em subcategorias mais lucrativas." },
+                    { name: "Vendas por m²", value: 1200, benchmark: 1500, unit: "R$", narrative: "Para vendas/m² abaixo da meta, o sistema sugere reavaliar o layout da loja para otimizar a exposição dos produtos mais vendidos ou de maior margem." }
+                ],
+                challenges: [
+                    "Gestão de estoque ineficiente (excesso ou falta de produtos).",
+                    "Concorrência acirrada (online e física) com um consumidor mais exigente.",
+                    "Pressão inflacionária e potencial retração econômica."
+                ]
+            },
+            "quiosques": {
+                name: "Quiosques",
+                icon: " kiosk ",
+                intro: "Com espaço limitado e alto custo de ocupação, quiosques precisam maximizar a rentabilidade por metro quadrado. A conversão de clientes e o ticket médio são vitais.",
+                kpis: [
+                    { name: "Vendas por m²", value: 3000, benchmark: 3500, unit: "R$", narrative: "O KPI mais crítico. Se estiver abaixo da meta, o sistema pode sugerir reavaliar o layout para destacar produtos de maior margem ou treinar a equipe para aumentar o ticket médio." },
+                    { name: "Taxa de Conversão", value: 15, benchmark: 20, unit: "%", narrative: "Para capitalizar o alto fluxo. Se a conversão cai em horários de pico, a sugestão é reforçar a equipe ou simplificar o processo de pagamento." },
+                    { name: "Custo de Ocupação", value: 20, benchmark: 15, unit: "% s/ Vendas", narrative: "Manter este percentual baixo é vital. Maximizar as vendas com base nos insights do sistema é a melhor forma de diluir o custo fixo do aluguel." }
+                ],
+                challenges: [
+                    "Alto custo de ocupação e espaço extremamente limitado.",
+                    "Gestão de estoque em pequeno espaço com reposição frequente.",
+                    "Atrair e converter clientes em ambientes de alta distração."
+                ]
+            },
+             "mercados": {
+                name: "Mercados",
+                icon: "🛒",
+                intro: "Mercados de bairro competem com grandes redes através da conveniência e de um mix adaptado. O combate à ruptura de gôndola e a gestão de perecíveis são essenciais.",
+                kpis: [
+                    { name: "Índice de Ruptura", value: 8, benchmark: 5, unit: "%", narrative: "O sistema alerta que o 'Leite Tipo A' tem ruptura de 15% nas sextas. A ação é ajustar o cronograma de pedidos para garantir disponibilidade no pico de demanda." },
+                    { name: "Giro de Estoque (Perecíveis)", value: 4, benchmark: 3, unit: "dias", narrative: "Um giro rápido evita perdas. O sistema ajuda a otimizar as compras de hortifrúti e laticínios com base na previsão de demanda diária." },
+                    { name: "Margem Líquida", value: 4, benchmark: 5, unit: "%", narrative: "Com margens apertadas, o sistema ajuda a analisar categorias de baixa performance para otimizar o mix, renegociar com fornecedores e controlar despesas." }
+                ],
+                challenges: [
+                    "Gestão de compras e estoque para evitar rupturas e perdas por vencimento.",
+                    "Concorrência com grandes redes e o formato 'atacarejo'.",
+                    "Controle de custos operacionais elevados (energia, aluguel)."
+                ]
+            },
+            "distribuidoras": {
+                name: "Distribuidoras (B2B)",
+                icon: "🚚",
+                intro: "O elo entre fabricantes e varejistas, onde eficiência logística e confiabilidade (OTIF) são primordiais. Otimizar o capital de giro e a gestão de frotas é o foco.",
+                kpis: [
+                    { name: "OTIF (On-Time In-Full)", value: 88, benchmark: 95, unit: "%", narrative: "Se o OTIF cai, o sistema ajuda a identificar a causa raiz (ex: falhas 'In-Full' na Região X), sugerindo ações como treinar a equipe de picking ou revisar a transportadora da rota." },
+                    { name: "Custo de Frete", value: 10, benchmark: 8, unit: "% s/ Fat.", narrative: "Se o custo de frete aumenta, o sistema pode sugerir ações para incentivar pedidos maiores (descontos por volume) ou otimizar rotas para consolidar cargas." },
+                    { name: "Ciclo de Caixa", value: 45, benchmark: 35, unit: "dias", narrative: "Encurtar o ciclo de caixa é crucial. O sistema ajuda a otimizar níveis de estoque e a gerenciar o contas a receber para converter vendas em caixa mais rapidamente." }
+                ],
+                challenges: [
+                    "Gestão complexa de logística e transporte em um país continental.",
+                    "Gerenciamento de estoque e capital de giro para atender demanda variável.",
+                    "Manutenção de relacionamento e retenção de clientes B2B."
+                ]
+            },
+            "vestuario": {
+                name: "Vestuário",
+                icon: "👕",
+                intro: "Setor movido por tendências, sazonalidade e necessidade de gestão de estoque ágil. Evitar o encalhe de coleções e a corrosão da margem por remarcações é o grande desafio.",
+                kpis: [
+                    { name: "Giro de Estoque", value: 2, benchmark: 3, unit: "x/ano", narrative: "Para coleções com baixo giro, o sistema sugere liquidações progressivas e ajuda a planejar melhor o volume de compra da próxima coleção para evitar sobras." },
+                    { name: "Taxa de Markdown", value: 40, benchmark: 25, unit: "%", narrative: "Uma alta taxa de remarcação indica compra excessiva. O sistema ajuda a analisar a performance para revisar o timing das compras e iniciar promoções menores mais cedo." },
+                    { name: "GMROI", value: 2.5, benchmark: 3.5, unit: "R$", narrative: "O Retorno da Margem Bruta sobre o Investimento em Estoque é chave. O sistema ajuda a identificar os produtos com melhor GMROI para otimizar as compras e o espaço de exposição." }
+                ],
+                challenges: [
+                    "Gestão de coleções e estoque sazonal para evitar obsolescência.",
+                    "Alta competição e mudanças rápidas nas tendências da moda.",
+                    "Complexidade da gestão da grade de produtos (tamanhos, cores, modelos)."
+                ]
+            }
+        };
+
+        const segmentNav = document.getElementById('segment-nav');
+        const segmentContent = document.getElementById('segment-content');
+        let kpiChart;
+
+        function renderSegment(segmentId) {
+            const segment = data[segmentId];
+            if (!segment) return;
+
+            // Atualiza navegação
+            document.querySelectorAll('#segment-nav button').forEach(btn => {
+                btn.classList.remove('segment-active');
+                btn.classList.add('segment-inactive');
+                if (btn.dataset.segment === segmentId) {
+                    btn.classList.add('segment-active');
+                    btn.classList.remove('segment-inactive');
+                }
+            });
+
+            // Atualiza conteúdo
+            segmentContent.innerHTML = `
+                <div class="card p-6 md:p-8 section-fade-in">
+                    <div class="flex items-center mb-4">
+                        <span class="text-4xl mr-4">${segment.icon}</span>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">${segment.name}</h3>
+                            <p class="text-gray-600 mt-1">${segment.intro}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="text-xl font-semibold text-gray-700 mb-4">KPIs Essenciais vs. Benchmarks (Brasil 2025)</h4>
+                        <div class="chart-container">
+                            <canvas id="kpiChartCanvas"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="mt-12">
+                        <h4 class="text-xl font-semibold text-gray-700 mb-4">Narrativas "Insight-Ação"</h4>
+                        <div class="space-y-4">
+                            ${segment.kpis.map(kpi => `
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-semibold text-gray-800">${kpi.name}</p>
+                                    <p class="text-sm text-gray-600">${kpi.narrative}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="mt-12">
+                         <h4 class="text-xl font-semibold text-gray-700 mb-4">Desafios Operacionais Críticos</h4>
+                         <ul class="space-y-3">
+                            ${segment.challenges.map(challenge => `
+                                <li class="flex items-start">
+                                    <span class="mr-3 mt-1 text-lg" style="color:#A88B79;">&#x26A0;</span>
+                                    <span class="text-gray-700">${challenge}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            renderChart(segment);
+        }
+        
+        function renderChart(segment) {
+            const ctx = document.getElementById('kpiChartCanvas').getContext('2d');
+            
+            const chartData = {
+                labels: segment.kpis.map(kpi => `${kpi.name} (${kpi.unit})`),
+                datasets: [
+                    {
+                        label: 'Valor Atual',
+                        data: segment.kpis.map(kpi => kpi.value),
+                        backgroundColor: 'rgba(168, 139, 121, 0.6)',
+                        borderColor: 'rgba(168, 139, 121, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Benchmark 2025',
+                        data: segment.kpis.map(kpi => kpi.benchmark),
+                        backgroundColor: 'rgba(215, 205, 198, 0.6)',
+                        borderColor: 'rgba(215, 205, 198, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            if (kpiChart) {
+                kpiChart.destroy();
+            }
+
+            kpiChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: `Performance de KPIs para ${segment.name}`
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        const unit = segment.kpis[context.dataIndex].unit;
+                                        label += `${context.parsed.y} ${unit}`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        },
+                        x: {
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    const label = this.getLabelForValue(value);
+                                    if (label.length > 16) {
+                                        return label.match(/.{1,16}/g);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Tab navigation
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.dataset.tab;
+
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('tab-active');
+                    btn.classList.add('tab-inactive');
+                });
+                button.classList.add('tab-active');
+                button.classList.remove('tab-inactive');
+
+                tabContents.forEach(content => {
+                    if (content.id === tabId) {
+                        content.classList.remove('hidden');
+                        content.classList.add('section-fade-in');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Initial render
+        Object.keys(data).forEach((key, index) => {
+            const segment = data[key];
+            const button = document.createElement('button');
+            button.dataset.segment = key;
+            button.className = `w-full text-left px-4 py-2 text-sm font-medium border-l-4 transition-colors duration-200 ${index === 0 ? 'segment-active' : 'segment-inactive'}`;
+            button.innerHTML = `<span class="mr-2">${segment.icon}</span> ${segment.name}`;
+            button.onclick = () => renderSegment(key);
+            segmentNav.appendChild(button);
+        });
+
+        renderSegment('restaurantes');
+
+    </script>
+</body>
+</html>
